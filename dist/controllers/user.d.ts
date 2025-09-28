@@ -1,0 +1,24 @@
+import type { NextFunction, Request, Response } from "express";
+declare const allUsers: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const createUser: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const getUserById: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const updateUserDetails: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const updateIsActive: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const deleteUser: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const getAllUsers: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+declare const getUserDetails: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const getOnlySpecifiedDetails: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+declare const getUserWhosAgeGTE25: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const andORORConditions: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const basicOperators: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const inops: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const createBlog: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const createNotifications: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+declare const allBlogsOfUser: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const findCategoryById: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const findAllCategory: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const createCategory: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const connectCategoryToBlog: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+declare const getBlogDetails: (req: Request, res: Response, next: NextFunction) => Promise<Response<any, Record<string, any>>>;
+export { allUsers, createUser, getUserById, updateUserDetails, updateIsActive, deleteUser, getAllUsers, getUserDetails, getOnlySpecifiedDetails, getUserWhosAgeGTE25, andORORConditions, basicOperators, inops, createBlog, createNotifications, allBlogsOfUser, findCategoryById, findAllCategory, createCategory, connectCategoryToBlog, getBlogDetails };
+//# sourceMappingURL=user.d.ts.map

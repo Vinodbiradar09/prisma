@@ -1,0 +1,535 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// model User {
+//   id       Int    @id @default(autoincrement())
+//   name     String
+//   email    String @unique
+//   password String
+//   age      Int
+// }
+
+// we will discuss about the prisma 
+// datatypes := String , Int , Float , Decimal , Boolean , Datetime , Bytes , Json
+// modifiers := [] , ? 
+
+// the datatypes simple String and int and float and decimal and boolean are same as and easy 
+// we will discuss about the enum enum is used basically for the type intelligence 
+//  role : { Admin , SuperAdmin , User} the role must be of these types only so here we can use the enum
+
+// enum Role {
+//   Admin
+//   SuperAdmin
+// }
+
+// model Vinod {
+//   id                String   @id
+//   name              String // this will be string
+//   password          String
+//   email             String   @unique
+//   age               Int // this will be of number integer type
+//   cgpa              Decimal // this will be of Decimal type
+//   averageAttendance Float // this will be of Float type
+//   isActive          Boolean // this will be of Boolean type
+//   settings          Json // it stores the json data like mongodb { theme : Dark , notifications : true} // most people avoid this only 
+//   createdAt         DateTime @default(now()) // the datatime is used to store the date and default now is current time
+//   content           Bytes // stores the blob data like images , files and encryptions
+//   image             Bytes? // stores the image url here it is used to store the buffer data , here the ? is optional 
+//   interest          String[] // here the interest is like string array we can do this only in postgresql not in sql 
+//   role              Role // it will be like custom data only
+// }
+
+// we will discuss about the attributes 
+// there are two types of attributes inline level and block level 
+// inline level @ it applies for the field level 
+// block level @@ it applies for the whole table 
+
+// what are the attributes are there 
+// @id @unique @default @updateAt @map @ignore @db @relation 
+
+// model Student {
+//   id            String   @id @default(uuid()) // here the @id is primary key one table can have only one primary key and default in uuid it autogenerates uuid 
+//   name          String?
+//   email         String   @unique // here the unique means the email will be unique 
+//   isActive      Boolean  @default(false) // here default means the default value if we not provide during the creation it takes the default has a false 
+//   quality_720p  String   @map("720p")
+//   quality_1080p String   @map("1080p") // what @map does suppose you have a field that starts with number but the lang's don't support the variables with number at staring and typescript follows camelcase convention also but there problem is you want to store the fields name in snake case and starting with number then it will helps you most now the field quality_720p will change the column name to the 720p and 1080p in the database but using the prisma client we can access using quality_720p only 
+//   gender        String   @ignore // it will ignore when we use the prisma client but it will get migrated in the database only it is ignored by prisma client 
+//   createdAt     DateTime @default(now()) // it takes the default time as now 
+//   updatedAt     DateTime @updatedAt // here the upatedAt returns the date when this table is updated 
+
+//   @@map("students") // now in the database it will store the table name with students only but while accessing using the typescript intelligence in prisma client we use student
+// }
+
+// NOTE := if we created the model and some data to it and later we try to add the new fields then there will be error saying that the data in the table don't have the value of newly created fileds so there is two options either make it ? optional or the manually add the data to the table
+
+// model Admin {
+//   id        String @id @default(uuid())
+//   firstName String @map("first_name") // in the database columns the first_name is saved and using the prisma client we can access it using firstName 
+//   lastName  String @map("last_name") // in database it is saved as last_name
+//   // we will discuss about the @db field 
+
+//   // the @db is used for the more precision if want to limit the string lengths and decimal and all that 
+//   // for string fields 
+//   username String  @unique @db.VarChar(50) // maximum 50 chars only that's if the chars reach above that it will throw the error 
+//   country  String  @db.Char(3) // always 3 char's not more than that 
+//   bio      String? @db.Text // unlimited size 
+
+//   @@map("admins")
+// }
+
+// model Order {
+//   id       String @id @default(uuid())
+//   quantity Int    @db.SmallInt // suitable for the small numbers 
+//   revenue  Int    @db.Integer // integer numbers   
+
+//   @@ignore // it will ignore the table for prisma client but when we migrate it it will get sync with the database 
+// }
+
+// for decimal 
+// model Product {
+//   id     String  @id @default(uuid())
+//   price  Decimal @db.Decimal(10, 2) // max 99999999.99
+//   rating Float   @db.DoublePrecision // upto 15 decimal digits
+
+//   @@ignore // it will ignore the table for prisma client but when we migrate it it will get sync with the database 
+// }
+
+// for date and time 
+// model Event {
+//   id        String   @id @default(uuid())
+//   startDate DateTime @db.Date
+//   StartTime DateTime @db.Time()
+//   createdAt DateTime @db.Timestamptz(6) // includes timestamps with zone 
+
+//   @@ignore // it will ignore the table for prisma client but when we migrate it it will get sync with the database 
+// }
+
+// we will discuss about the @@index and @@unique in detail 
+
+// @@index is used for the indexing it is a concept of rdbms indexes make the queries to run faster the database creates the seperate table and add the fields names to it when we do indexing it won't search the table in sequentail order instead of it gets for the index table which will be faster the 
+// types of index in the postgresql the most popular is the BTree in the postgresql 
+// why indexes are benifits faster lookup's for where clauses Joins and orderby / limit 
+// index desing patterns 
+// single index columns @@index([authorId]) creates the index for the where authorId = 23 
+// composite index columns @@index([authorId , createdAt]) where createdAt > and authorId = 23 
+
+// model Post {
+//   id        String  @id @default(uuid()) // we don't require the index to the primary keys and unique fields 
+//   tile      String  @db.Text
+//   published Boolean @default(false)
+//   authorId  String
+
+//   @@index([authorId]) // index is applied to the authorId 
+//   @@index([authorId, tile]) // here the index is applied to the authorId and the title so whenver we try to find the post with authorId and title it will be very fast
+// }
+
+// @@unique it also follow the indexing we don't externally need to apply the indexing for it 
+// @unique applies to the single field 
+// @@unique applies to the table 
+// what is does suppose we have to make the two fields unique like the name vinod and with age 20 must be only one that time it will be helpful there can be multiple vinod of other age 30 , 40 but not 20 
+
+// model NewUser {
+//   id    String @id @default(uuid())
+//   email String @unique
+//   phone Int    @db.Integer
+
+//   @@unique([email, phone]) // here email with phonenumber can't have multiple user's like vinod@gmail.com and phone number 7303832287 so this like 
+// }
+
+// model Enrollment {
+//   id        String @id @default(uuid())
+//   studentId String
+//   courseId  String
+//   grade     Int?
+
+//   // ensure no student's can enroll the same course twice 
+
+//   @@unique([studentId, courseId])
+//   @@index([studentId])
+//   @@index([studentId, grade]) // here we applied the index to the studentId and grade 
+// }
+
+// @@id it is like composite primary key what does it means 
+// how it is designed @@id([studentID , courseID]) here the primary key is made up off two columns 
+// we will be confused right there should be only one primary why here we are having two primary keys 
+// @@id is used for uniqueness of the id suppose think how your primary key id will there like random numbers right here also same a studentId and the courseID must be unique that is considered here as unique suppose studentid is 1 and courseID is 101 there will be only this key as primary key no other student 1 and courseid 101 will be there 
+// it is same as @@uniqueness right kindoff but different in @@uniqueness you will have a @id as a primary key
+
+// studentId	courseId	Valid?
+// 1	101	✅ Yes
+// 1	102	✅ Yes
+// 2	101	✅ Yes
+// 1	101	❌ No, duplicates the composite primary key
+
+// model Course {
+//   studentId String
+//   courseId  String
+
+//   @@id([studentId, courseId]) // the primary key is the combination of two columns 
+// }
+
+// we will discuss about the relations in the prisma in detail 
+
+// there are three relation's one to one , one to many and many to many 
+
+// one to one 
+
+// the one to one relation means the table A of one record is connected to one record of the table B only one record is connected 
+// one record in model A is related to one record in the model B 
+// we should use the foriegn key @unique to ensures 1 to 1 mapping 
+// we can make the relations optional and required also 
+// one record in the table A is related to exactly to one record in the table b vice versa 
+// in database it usually means one rows links to another row 
+
+// examples 
+// 1. User <=> Profile one user can have one profile 
+// 2. Employee <=> Passport one employee can have one passport 
+// 3. Student <=> Idcard one student has one id card 
+
+// example 1 User <=> profile 
+
+// model UsersRelations {
+//   id      String            @id @default(uuid())
+//   email   String            @unique
+//   profile ProfileRelations? // here the profile is virtual it does not include in the cloumns 
+// }
+
+// model ProfileRelations {
+//   id     String         @id @default(uuid())
+//   bio    String?
+//   userId String         @unique // here this is actual foriegn key which stores the primary key of the user @id 
+//   user   UsersRelations @relation(fields: [userId], references: [id]) // here this is also virtual field it is used for the prisma client to include the detals of the user 
+// }
+
+// i will tell clearly what get's stored and how to access and all 
+
+// userId this is the actual foriegn key in the ProfileRelations it stores the actual primary key of the user.id which is unique and if we have to achieve one to one relation then 1 : 1 we must use the @unique to it 
+
+// profile Profile it is a virtual field and it is not stored in the column it is just used to access the details of the profile 
+
+// user UserRelations @relation(fields : [userId] , references : [id]) // here we are building the relation to the user we are telling that the fields is userId were you need to references the @id which is primary key to it 
+
+// 2nd example employee and passport each employee has exactly one passport 
+
+// model Employee {
+//   id        String    @id @default(uuid())
+//   name      String?
+//   email     String    @unique
+//   passport  Passport? // this is a virtual field 
+//   createdAt DateTime  @default(now())
+// }
+
+// model Passport {
+//   id             String   @id @default(uuid())
+//   passportNumber String   @unique @db.VarChar(64)
+//   issuedAt       DateTime @db.Date
+//   expiredAt      DateTime @db.Date
+//   employeeId     String   @unique @db.Uuid // unique 1 : 1 
+//   employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade) // it is also virtual field 
+//   createdAt      DateTime @default(now())
+// }
+
+// 3rd example student and idcard each student has one idcard 
+
+// model NewSchoolStudent {
+//   id        String   @id @default(uuid())
+//   name      String?
+//   email     String   @unique
+//   idCard    IdCard?
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model IdCard {
+//   id         String           @id @default(uuid())
+//   cardNumber String           @unique @db.VarChar(64)
+//   issuedAt   DateTime         @default(now())
+//   studentId  String           @unique
+//   student    NewSchoolStudent @relation(fields: [studentId], references: [id], onDelete: Cascade)
+//   createdAt  DateTime         @default(now())
+// }
+
+// now we will discuss about the one to may relations in detail
+
+// one to many means one record in the table A is connected or related to many records in the table B 
+// here think of like this one user can have many post's like user vinod can have many post's 
+// there are two tables one is user and another is posts here the vinod record is related to many post in the Post table like vinod's1post and vinod's2post these all the records are connected to only one user this is called one to many 
+
+// in parent table we define virtual array in which all the post's are stored it is available to the prisma client only 
+
+// examples
+// 1. one user can write many posts 
+// 2. one teacher can have many students 
+// 3. one category can have many products 
+
+// example one user <=> post's 
+
+// model TwitterUsers {
+//   id    String        @id @default(uuid())
+//   name  String?
+//   email String        @unique
+//   posts TwitterPost[] // here by defining the array we ensure that it is the 1 to N relations 
+// }
+
+// model TwitterPost {
+//   id      String       @id @default(uuid())
+//   title   String?
+//   content String?
+//   userId  String // foreign key which stores the primary key 
+//   user    TwitterUsers @relation(fields: [userId], references: [id]) // here we are telling that this is user of TwitterUsers and we are building the relation for the userID and the reference is id from the TwitterUsers 
+// }
+
+// posts TwitterPost[] this is the relation field TwitterPost[] means it have multiple posts 
+// prisma automatically links the TwitterPost.user relation here 
+
+// userId is a foreign key which stores the primary key of the user 
+
+// one teacher many students 
+// model Teacher {
+//   id       String            @id @default(uuid())
+//   name     String?
+//   email    String            @unique
+//   students TeacherStudents[] // one to many one teacher many students 
+// }
+
+// model TeacherStudents {
+//   id        String  @id @default(uuid())
+//   name      String?
+//   teacherId String // Foreign key which stores actually primary key of the teacher 
+//   teacher   Teacher @relation(fields: [teacherId], references: [id])
+// }
+
+// Teacher.students virtual array shows all the students of that teacher 
+// TeacherStudents.teacherId actual foreign key 
+// TeacherStudents.teacher virtual field stored the details of the teacher 
+
+// model Category {
+//   id       String             @id @default(uuid())
+//   name     String?
+//   email    String             @unique
+//   products Product_category[] // on the one model side there will be the array of many 
+// }
+
+// model Product_category {
+//   id         String   @id @default(uuid())
+//   name       String?
+//   price      Float
+//   categoryId String // foriegn key 
+//   category   Category @relation(fields: [categoryId], references: [id]) // building the relation here 
+// }
+
+// foriegn key is always stored in the many side and virtaul array is already stored in the one side 
+// this is one to many 
+
+// one to many 
+// ham ne represent kiya hai array ke form mai in one to many 
+
+// now let's discuss about the many to many relations 
+
+// what is the many to many 
+// many records of the table A is releated to connected to the many record of the table B 
+// one post can have many tag's and one tag can belong to many post's
+// there are two ways to model this in prisma 
+// implicit many to many prisma auto creates and joins the table for you 
+// explicit many to many you create the join table model yourself recommended in production if you need metadata control 
+
+// what are these implicit and explicit 
+// implicit := we just declares the array A[] and B[] on the both side prisma automatically generates the hiiden table we don't have any meta data 
+
+// explicit := we define the join model yourself and we can add the metadata to it  and it is best for the prod and we can add the composite primary key and indexing also we can add 
+
+// exmaples models 
+// 1. post <=> tags (implicit)
+
+// model InstagramPost {
+//   id    String @id @default(uuid())
+//   image Bytes
+//   tags  Tags[] // here we are telling that the one instagram post can have many tag's
+// }
+
+// model Tags {
+//   id            String          @id @default(uuid())
+//   tagName       String          @unique
+//   instagramPost InstagramPost[] // here we are telling that the Tag's can have the multiple Instagram post 
+// }
+
+// here prisma auto created the join table
+
+// 2. student <=> course (explicit)
+
+// here there can be many to students to many course right and for many course to many students
+
+// there are many course like golang , rust , Typescript and it can have many students 
+// there are many students like vinod , skanda , piyush , harkirat , rohan to many courses 
+
+// model AcharyaStudent {
+//   id          String               @id @default(uuid())
+//   name        String
+//   enrollments AcharyaEnrollments[]
+// }
+
+// model AcharyaCourse {
+//   id          String               @id @default(uuid())
+//   title       String
+//   enrollments AcharyaEnrollments[]
+// }
+
+// model AcharyaEnrollments {
+//   studentID  String
+//   courseID   String
+//   enrolledAt DateTime @default(now())
+//   grade      String?
+
+//   student AcharyaStudent @relation(fields: [studentID], references: [id])
+//   course  AcharyaCourse  @relation(fields: [courseID], references: [id])
+
+//   @@id([studentID, courseID]) // here this ensures that the one user is releated to one course 
+// }
+
+// 3. User <= Project's 
+
+// model Dev {
+//   id       String         @id @default(uuid())
+//   email    String
+//   projects DevsProjects[]
+// }
+
+// model ProdProjects {
+//   id      String         @id @default(uuid())
+//   name    String
+//   members DevsProjects[]
+// }
+
+// model DevsProjects {
+//   devID String 
+//   prodProjectID String
+//   role String
+
+//   dev Dev @relation(fields: [devID] , references: [id])
+//   prodProjects ProdProjects @relation(fields: [prodProjectID] , references: [id])
+
+//   @@id([devID , prodProjectID])
+
+// }
+
+model User {
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  name                String?              @db.VarChar(20)
+  age                 Int?                 @db.Integer
+  isActive            Boolean              @default(false)
+  password            String
+  notificationMethods NotificationMethods? // one to one 
+  blob                Bytes?
+  interests           String[] // access modifier []
+  role                UserRole?
+  blogs               Blog[] // one to many 
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model NotificationMethods {
+  id     String  @id @default(uuid())
+  phone  Boolean
+  email  Boolean
+  userId String  @unique // one to one 
+  user   User    @relation(fields: [userId], references: [id])
+}
+
+enum UserRole {
+  SuperAdmin
+  Admin
+  Worker
+}
+
+model Video {
+  id            String   @id @default(uuid())
+  title         String   @db.Text
+  quality_720p  String   @map("720p")
+  quality_1080p String   @map("1080p")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Blog {
+  id         String     @id @default(uuid())
+  title      String     @db.VarChar(256)
+  content    String
+  categories Category[] // many to many 
+  userID     String // one to many 
+  user       User       @relation(fields: [userID], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Category {
+  id    String @id @default(uuid())
+  name  String @db.VarChar(255)
+  blogs Blog[] // many to many 
+}
+
+
+// see again explanation is own lang
+// 1 : N one to many 
+// one user can have multiple post's vinod user can have multiple 10 posts but one specific post like post_1 that should belong only one vinod , the post_1's owner should be vinod only not others 
+
+// M : M many to many 
+
+// one post can multiple tag's there is one post called coolcapture it can have multiple tag's and for multiple tag's like lmaoff , ngmi , asap these one tag's can have multiple post's 
+
+
+// ex := one to many 
+// user
+// | id | name  |
+// | -- | ----- |
+// | 1  | Alice |
+// | 2  | Bob   |
+
+// posts
+// | id   | title  | userId |
+// | --   | ------ | ------ |
+// | 101  | Post A | 1      | // so see here we have two userId 1 which is alice alice can have multiple post's 
+// | 201  | Post B | 1      |
+// | 301  | Post C | 2      |
+
+// post 101 has only one owner that is alice 
+// post 201 also has one owner that is alice
+// post 301 also has one owner that is bob
+
+
+
+// ex := many to many 
+// Post
+// | id      | title  |
+// | --      | ------ |
+// | post_1  | Post A |
+// | post_2  | Post B |
+// | post_3  | Post C |
+
+// Tags
+// | id     | name       |
+// | --     | ---------- |
+// | tag_1  | Technology |
+// | tag_2  | Science    |
+
+// Post_Tag (join table created by Prisma)
+// | postId    | tagId |
+// | ------    | ----- |
+// | post_1    | tag_1 |
+// | post_1    | tag_2 |
+// | post_2    | tag_1 |
+// | post_3    | tag_2 |
+
+// see here post_1 has many tags like tag_1 and tag_2 and post_2 has one tag called tag_1 
+// now the owner of the tag_1 is post_1 and post_2 
+// and owner of the tag_2 is post_1 and post_3 
+
+
+
